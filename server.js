@@ -76,6 +76,82 @@ const courses = {
 };
 
 /**
+ * Configure Express middleware
+ */
+
+// Middleware to make NODE_ENV available to all templates
+app.use((req, res, next) => {
+    res.locals.NODE_ENV = NODE_ENV.toLowerCase() || 'production';
+
+    // Continue to the next middleware or route handler
+    next();
+});
+
+app.use((req, res, next) => {
+    // Skip logging for routes that start with /. (like /.well-known/)
+    if (!req.path.startsWith('/.')) {
+        // console.log(`${req.method} ${req.url}`);
+    }
+    next(); // Pass control to the next middleware or route
+});
+
+// Middleware to add global data to all templates
+app.use((req, res, next) => {
+    // Add current year for copyright
+    res.locals.currentYear = new Date().getFullYear();
+
+    next();
+});
+
+// Global middleware for time-based greeting
+app.use((req, res, next) => {
+    const currentHour = new Date().getHours();
+    let greeting = ``;
+    if (currentHour < 12)
+    {
+        greeting = `<p>Good morning!</p>`;
+    }
+    else if (currentHour >= 12 && currentHour <= 17)
+    {
+        greeting = `<p>Good afternoon!</p>`;
+    }
+    else
+    {
+        greeting = `<p>Good evening!</p>`;
+    }
+
+    res.locals.greeting = greeting;
+    next();
+});
+
+// Global middleware for random theme selection
+app.use((req, res, next) => {
+    const themes = ['blue-theme', 'green-theme', 'red-theme'];
+
+    const randomIndex = Math.floor(Math.random() * themes.length);
+    const randomTheme = themes[randomIndex];
+    res.locals.bodyClass = randomTheme;
+
+    next();
+});
+
+// Global middleware to share query parameters with templates
+app.use((req, res, next) => {
+    // Make req.query available to all templates for debugging and conditional rendering
+    res.locals.queryParams = req.query || {};
+
+    next();
+});
+
+// Route-specific middleware that sets custom headers
+const addDemoHeaders = (req, res, next) => {
+    res.setHeader("X-Demo-Page", true);
+    res.setHeader("X-Middleware-Demo", "This is a demo page!");
+
+    next();
+};
+
+/**
  * Routes
  */
 app.get('/', (req, res) => {
@@ -137,6 +213,13 @@ app.get('/catalog/:courseId', (req, res, next) => {
         title: `${course.id} - ${course.title}`,
         course: { ...course, sections: sortedSections },
         currentSort: sortBy
+    });
+});
+
+// Demo page route with header middleware
+app.get('/demo', addDemoHeaders, (req, res) => {
+    res.render('demo', {
+        title: 'Middleware Demo Page'
     });
 });
 
