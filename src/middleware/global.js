@@ -75,5 +75,12 @@ export const addLocalVariables = (req, res, next) => {
     res.locals.bodyClass = randomTheme;
     // gives every request access to asset management methods
     setHeadAssetsFunctionality(res);
+
+    // Convenience variable for UI state based on session state
+    res.locals.isLoggedIn = false;
+    if (req.session && req.session.user) {
+        res.locals.isLoggedIn = true;
+    }
+
     next();
 };
