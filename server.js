@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 // Import MVC components
 import routes from './src/controllers/routes.js';
 import { addLocalVariables } from './src/middleware/global.js';
+import flash from './src/middleware/flash.js';
 import { setupDatabase, testConnection } from './src/models/setup.js';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
@@ -68,6 +69,12 @@ startSessionCleanup();
  * Global Middleware
  */
 app.use(addLocalVariables);
+
+// Global middleware (sets res.locals variables)
+app.use(addLocalVariables);
+
+// Flash message middleware (must come after session and global middleware)
+app.use(flash);
 
 /**
  * Routes
