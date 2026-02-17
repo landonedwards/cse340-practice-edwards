@@ -24,8 +24,6 @@ const PORT = process.env.PORT || 3000;
  * Setup Express Server
  */
 const app = express();
-// FIX suggested by Claude. Login page isn't working...
-app.set('trust proxy', 1);
 
 // Initialize PostgreSQL session store
 const pgSession = connectPgSimple(session);
