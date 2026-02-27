@@ -16,6 +16,7 @@
         <% faculty.forEach(member => { %>
             <div class="faculty-card">
                 <h3><a href="/faculty/<%= member.slug %>"><%= member.name %></a></h3>
+                <img src="/images/faculty/<%= member.slug %>.jpg" alt="photo of <%= member.name %>">
                 <p class="faculty-title"><%= member.title %></p>
                 <p class="faculty-department"><%= member.department %></p>
             </div>
